@@ -38,8 +38,6 @@ module Bandit
         Bandit.storage.get_experiments.each do |experiment_name|
           experiments << Experiment.new(JSON.parse(Bandit.storage.get_experiment(experiment_name)))
         end
-      else
-        return []
       end
       experiments
     end
