@@ -9,6 +9,9 @@
   <p>
     <%= experiment.description %>
   </p>
-  <%= render :partial => 'experiment_table', :locals => { :experiment => experiment } %>
+      <% ["pageview", "add_to_cart", "purchase", "revenue"].each do |conversion_category| %>
+          <h4><%= conversion_category.humanize.camelize %></h4>
+          <%= render :partial => 'experiment_table', :locals => { :experiment => experiment, :category => conversion_category } %>
+      <% end %>
   <% end %>
 </section>
