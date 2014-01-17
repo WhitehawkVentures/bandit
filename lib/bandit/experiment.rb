@@ -44,11 +44,11 @@ module Bandit
       experiments
     end
 
-    def choose(default=nil)
+    def choose(default=nil, category = nil)
       if default && alternatives.include?(default)
         alt = default
       else
-        alt = Bandit.player.choose_alternative(self)
+        alt = Bandit.player.choose_alternative(self, category)
         @storage.incr_participants(self, alt)
       end
       alt
@@ -93,6 +93,19 @@ module Bandit
       alt_participant_count = [self.participant_count(alt), 1].max
       # scale to 100 to match conversion_rate output
       Math.sqrt(2 * Math.log(total_participant_count) / alt_participant_count) * 100
+    end
+
+    def best_alternative(category)
+      best = nil
+      best_rate = nil
+      self.alternatives.each { |alt|
+        rate = self.conversion_rate(alt, category)
+        if best_rate.nil? or rate > best_rate
+          best = alt
+          best_rate = rate
+        end
+      }
+      best
     end
   end
 end

@@ -2,11 +2,11 @@ module Bandit
   class SoftmaxPlayer < BasePlayer
     include Memoizable
 
-    def choose_alternative(experiment)
+    def choose_alternative(experiment, category=nil)
       memoize(experiment.name) {
         t = getTemperature(experiment)
         norms = experiment.alternatives.map { |alt| 
-          Math.exp(experiment.conversion_rate(alt) / (t * 100))
+          Math.exp(experiment.conversion_rate(alt, category) / (t * 100))
         }
         scale = norms.reduce(:+)
         probs = norms.map { |n| n / scale }

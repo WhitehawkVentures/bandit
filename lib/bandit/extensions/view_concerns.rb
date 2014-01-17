@@ -5,26 +5,26 @@ module Bandit
     extend ActiveSupport::Concern
 
     # default choose is a session based choice
-    def bandit_choose(exp)
-      bandit_session_choose(exp)
+    def bandit_choose(exp, category = nil)
+      bandit_session_choose(exp, category)
     end
 
     # always choose something new and increase the participant count
-    def bandit_simple_choose(exp)
-      Bandit.get_experiment(exp).choose(nil)
+    def bandit_simple_choose(exp, category = nil)
+      Bandit.get_experiment(exp).choose(nil, category)
     end
 
     # stick to one alternative for the entire browser session
-    def bandit_session_choose(exp)
+    def bandit_session_choose(exp, category = nil)
       name = "bandit_#{exp}".intern
       # choose url param with preference
       value = params[name].nil? ? cookies.signed[name] : params[name]
       # choose with default, and set cookie
-      cookies.signed[name] = Bandit.get_experiment(exp).choose(value)
+      cookies.signed[name] = Bandit.get_experiment(exp).choose(value, category)
     end
 
     # stick to one alternative until user deletes cookies or changes browser
-    def bandit_sticky_choose(exp)
+    def bandit_sticky_choose(exp, category = nil)
       name = "bandit_#{exp}".intern
       # choose url param with preference
       value = params[name].nil? ? cookies.signed[name] : params[name]
@@ -32,7 +32,7 @@ module Bandit
       alternative = if Bandit.get_experiment(exp).alternatives.include?(value)
                       value
                     else
-                      Bandit.get_experiment(exp).choose(value)
+                      Bandit.get_experiment(exp).choose(value, category)
                     end
       # re-set cookie
       cookies.permanent.signed[name] = alternative
