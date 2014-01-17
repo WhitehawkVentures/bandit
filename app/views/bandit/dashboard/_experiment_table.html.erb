@@ -5,14 +5,16 @@
         <th scope="col">Participants</th>
         <th scope="col">Conversions</th>
         <th scope="col">Conversion Rate</th>
+        <!--<th scope="col">Confidence Interval</th>-->
       </tr>
 
       <% experiment.alternatives.each do |alt| %>
       <tr class="<%= cycle('even', 'alt') %>">
         <td class="name"><%= alt %></td>
         <td><%= experiment.participant_count(alt) %></td>
-        <td><%= experiment.conversion_count(alt) %></td>
-        <td><%= round_percent experiment.conversion_rate(alt) %> %</td>
+        <td><%= category == "revenue" ? number_to_currency(experiment.conversion_count(alt, category).to_f/100) : experiment.conversion_count(alt, category) %></td>
+        <td><%= category == "revenue" ? number_to_currency(experiment.conversion_rate(alt, category).to_f/100) : "#{round_percent(experiment.conversion_rate(alt, category))} %" %></td>
+        <!--<td><%= experiment.confidence_interval(alt) %></td>-->
       </tr>
       <% end %>
     </tbody>

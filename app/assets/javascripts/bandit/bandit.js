@@ -1,10 +1,10 @@
-function show_chart(title, url) {
-   $.get(url, function(data) { show_chart_data(title, data) });
+function show_chart(title, url, category) {
+   $.get(url, function(data) { show_chart_data(title, data, category) });
 }
 
-function show_chart_data(title, data) {
+function show_chart_data(title, data, category) {
    var options = {
-      chart: { renderTo: 'totals_gcontainer' },
+      chart: { renderTo: 'totals_gcontainer_' + category },
       title: { text: title },
       rangeSelector: { selected: 1 },
       subtitle: { text: "participant / conversion totals" },
@@ -13,7 +13,7 @@ function show_chart_data(title, data) {
    };
 
    var percent_options = {
-      chart: { renderTo: 'percents_gcontainer' },
+      chart: { renderTo: 'percents_gcontainer_' + category },
       title: { text: title },
       rangeSelector: { selected: 1 },
       subtitle: { text: "conversion percents" },
@@ -46,6 +46,6 @@ function show_chart_data(title, data) {
    options.series.push(series_p);
    options.series.push(series_c);
    percent_options.series.push(series_percent);
-   var chart = new Highcharts.StockChart(options);
+//   var chart = new Highcharts.StockChart(options);
    var charttwo = new Highcharts.StockChart(percent_options);
 }

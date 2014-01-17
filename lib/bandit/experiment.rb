@@ -54,8 +54,8 @@ module Bandit
       alt
     end
 
-    def convert!(alt, count=1)
-      @storage.incr_conversions(self, alt, count)
+    def convert!(alt, category = nil, count=1)
+      @storage.incr_conversions(self, alt, category, count)
     end
 
     def validate!
@@ -66,8 +66,8 @@ module Bandit
       }
     end
 
-    def conversion_count(alt, date_hour=nil)
-      @storage.conversion_count(self, alt, date_hour)
+    def conversion_count(alt, category, date_hour=nil)
+      @storage.conversion_count(self, alt, category, date_hour)
     end
 
     def participant_count(alt, date_hour=nil)
@@ -78,14 +78,21 @@ module Bandit
       @storage.total_participant_count(self, date_hour)
     end
 
-    def conversion_rate(alt)
+    def conversion_rate(alt, category)
       pcount = participant_count(alt)
-      ccount = conversion_count(alt)
+      ccount = conversion_count(alt, category)
       (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
     end
 
     def alternative_start(alt)
       @storage.alternative_start_time(self, alt)
+    end
+
+    def confidence_interval(alt)
+      total_participant_count = [self.total_participant_count, 1].max
+      alt_participant_count = [self.participant_count(alt), 1].max
+      # scale to 100 to match conversion_rate output
+      Math.sqrt(2 * Math.log(total_participant_count) / alt_participant_count) * 100
     end
   end
 end

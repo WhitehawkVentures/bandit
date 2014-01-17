@@ -58,7 +58,7 @@ module Bandit
   end
 
   def self.get_experiment(name)
-    exp = Experiment.instances.select { |e| e.name == name }
+    exp = Experiment.instances.select { |e| e.name == name.to_s }
     exp.length > 0 ? exp.first : nil
   end
 
