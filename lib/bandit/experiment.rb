@@ -1,23 +1,47 @@
 module Bandit
   class Experiment
     attr_accessor :name, :title, :description, :alternatives
-    @@instances = []
 
     def self.create(name)
       e = Experiment.new(:name => name)
       yield e
       e.validate!
+      e.save
       e
+    end
+
+    def self.create_or_attach(name)
+      if Bandit.experiments.include?(name.to_s)
+        experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+        yield experiment
+      else
+        experiment = Experiment.create(name) do |e|
+          yield e
+        end
+      end
+      experiment
+    end
+
+    def save
+      @storage.save_experiment(self)
     end
 
     def initialize(args=nil)
       args.each { |k,v| send "#{k}=", v } unless args.nil?
-      @@instances << self
       @storage = Bandit.storage
     end
 
     def self.instances
-      @@instances
+      experiment_names = Bandit.storage.get_experiments
+      experiments = []
+      if experiment_names.present?
+        Bandit.storage.get_experiments.each do |experiment_name|
+          experiments << Experiment.new(JSON.parse(Bandit.storage.get_experiment(experiment_name)))
+        end
+      else
+        return []
+      end
+      experiments
     end
 
     def choose(default=nil)

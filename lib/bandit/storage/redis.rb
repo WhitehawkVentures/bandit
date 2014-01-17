@@ -47,6 +47,16 @@ module Bandit
       }
     end
 
+    def sadd(key, value)
+      with_failure_grace(value) {
+        @redis.sadd(key, value)
+      }
+    end
+
+    def smembers(key)
+      @redis.smembers(key)
+    end
+
     def clear!
       with_failure_grace(nil) {
         @redis.flushdb

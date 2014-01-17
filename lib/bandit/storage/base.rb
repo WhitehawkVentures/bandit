@@ -131,11 +131,26 @@ module Bandit
     def with_failure_grace(fail_default=0)
       begin
         yield
-      rescue
+      rescue Exception => e
+        retry
         Bandit.storage_failed!
-        Rails.logger.error "Storage method #{self.class} failed.  Falling back to memory storage."
         fail_default
       end
+    end
+
+    def get_experiments
+      smembers "experiments"
+    end
+
+    def get_experiment(experiment_name)
+      get make_key(["experiments", experiment_name])
+    end
+
+    def save_experiment(experiment)
+      sadd "experiments", experiment.name
+      hash = {}
+      experiment.instance_variables.each {|var| hash[var.to_s.delete("@")] = experiment.instance_variable_get(var) unless var.to_s == "@storage" }
+      set make_key(["experiments", experiment.name]), hash.to_json
     end
   end
 end
