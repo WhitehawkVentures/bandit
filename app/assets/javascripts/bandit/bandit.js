@@ -1,5 +1,5 @@
 function show_chart(title, url, category) {
-   $.get(url, function(data) { show_chart_data(title, data, category) });
+   $.get(url+'?category='+category, function(data) { show_chart_data(title, data, category) });
 }
 
 function show_chart_data(title, data, category) {
