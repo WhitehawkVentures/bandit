@@ -132,6 +132,8 @@ module Bandit
       begin
         yield
       rescue Exception => e
+        # XXX JBB: Why retry here?  Rest of rescue block never gets called, and
+        #          with no terminal condition may become an infinite loop.
         retry
         Bandit.storage_failed!
         fail_default
