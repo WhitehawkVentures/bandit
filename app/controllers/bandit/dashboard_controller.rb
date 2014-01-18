@@ -20,9 +20,12 @@ class Bandit::DashboardController < Bandit::ApplicationController
       start = experiment.alternative_start(alt)
       next if start.nil?
       start.date.upto(Date.today) do |d|
-        pcount = Bandit::DateHour.date_inject(d, 0) { |sum,dh| sum + experiment.participant_count(alt, dh) }
-        ccount = Bandit::DateHour.date_inject(d, 0) { |sum,dh| sum + experiment.conversion_count(alt, category, dh) }
-        rows << [ alt, d.year, d.month, d.day, pcount, ccount ].join("\t")
+        Bandit::DateHour.new(d, 0).upto(Bandit::DateHour.new(d, 23)) { |dh|
+          #initial = yield initial, dh
+          pcount = experiment.participant_count(alt, dh)
+          ccount = experiment.conversion_count(alt, category, dh)
+          rows << [ alt, d.year, d.month, d.day, dh.hour, pcount, ccount ].join("\t")
+        }
       end
     end
     rows.join("\n")
