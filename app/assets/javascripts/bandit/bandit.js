@@ -6,7 +6,7 @@ function show_chart_data(title, data, category) {
    var options = {
       chart: { renderTo: 'totals_gcontainer_' + category },
       title: { text: title },
-      rangeSelector: { selected: 1 },
+      rangeSelector: { selected: 5 },
       subtitle: { text: "participant / conversion totals" },
       yAxis: { title: { text: "people" } },
       series: []
@@ -15,7 +15,7 @@ function show_chart_data(title, data, category) {
    var percent_options = {
       chart: { renderTo: 'percents_gcontainer_' + category },
       title: { text: title },
-      rangeSelector: { selected: 1 },
+      rangeSelector: { selected: 5 },
       subtitle: { text: "conversion percents" },
       yAxis: { title: { text: "% converted" } },
       series: []
