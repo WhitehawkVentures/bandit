@@ -11,7 +11,11 @@
 
       <% experiment.alternatives.each do |alt| %>
       <tr class="<%= cycle('even', 'alt') %>">
-        <td class="name"><%= alt %></td>
+        <% if experiment.name.include?("_photo") %>
+            <td class="name"><a href="https://www.touchofmodern.com/sale_photos/<%= alt %>?size=large" target="_blank"><%= image_tag "https://www.touchofmodern.com/sale_photos/#{alt}?size=small", :height => 50, :width => 50 %></a></td>
+        <% else %>
+            <td class="name"><%= alt %></td>
+        <% end %>
         <td><%= category == "revenue" ? number_to_currency(experiment.conversion_count(alt, category).to_f/100) : experiment.conversion_count(alt, category) %> / <%= experiment.participant_count(alt) %></td>
         <td><%= category == "revenue" ? number_to_currency(experiment.conversion_rate(alt, category).to_f/100) : "#{round_percent(experiment.conversion_rate(alt, category))} %" %></td>
         <td><%= category == "revenue" ? number_to_currency(experiment.conversion_rate_low(alt, category).to_f/100) : "#{round_percent(experiment.conversion_rate_low(alt, category))} %" %> - <%= category == "revenue" ? number_to_currency(experiment.conversion_rate_high(alt, category).to_f/100) : "#{round_percent(experiment.conversion_rate_high(alt, category))} %" %></td>
