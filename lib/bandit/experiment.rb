@@ -82,6 +82,10 @@ module Bandit
         return 0
       end
     end
+    
+    def confidence_interval(alt, category)
+      standard_error(alt, category) * 1.96
+    end
 
     def poz(z)
       if (z == 0.0)
@@ -146,11 +150,11 @@ module Bandit
     end
 
     def conversion_rate_low(alt, category)
-      conversion_rate(alt, category) - standard_error(alt, category)
+      conversion_rate(alt, category) - confidence_interval(alt, category)
     end
 
     def conversion_rate_high(alt, category)
-      conversion_rate(alt, category) + standard_error(alt, category)
+      conversion_rate(alt, category) + confidence_interval(alt, category)
     end
 
     def alternative_start(alt)
