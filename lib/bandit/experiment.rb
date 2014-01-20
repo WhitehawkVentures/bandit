@@ -120,8 +120,8 @@ module Bandit
       worst = worst_alternative(category)
       p_1 = conversion_rate(worst, category)/100.0
       p_2 = conversion_rate(alt, category)/100.0
-      se_1 = standard_error(worst, category)
-      se_2 = standard_error(alt, category)
+      se_1 = standard_error(worst, category)/100.0
+      se_2 = standard_error(alt, category)/100.0
 
       z_score = (p_2-p_1)/(Math.sqrt(se_1**2 + se_2**2))
       if (Math.sqrt(se_1**2 + se_2**2)) == 0 || z_score > 6
