@@ -127,7 +127,7 @@ module Bandit
       if (Math.sqrt(se_1**2 + se_2**2)) == 0 || z_score > 6
         return 0
       else
-        return poz(z_score.abs)
+        return poz(z_score.abs)*100
       end
     end
 
