@@ -1,16 +1,40 @@
-# store total count for this alternative
-# conversions:<experiment>:<alternative> = count
+# Bandit keys:
+
+# Store total count for this alternative (+ by category for conversions)
+# conversions:<experiment>:<alternative>:<category> = count
+# e.g. conversions:sale_3519_photo:6:pageview => "9"
+# TYPE=[none:none:none:string]
 # participants:<experiment>:<alternative> = count
+# e.g. participants:sale_3519_photo:6 => "1"
+# TYPE=[none:none:string]
 
-# store first time an alternative is used
-# altstart:<experiment>:<alternative> = timestamp
+# Store first time an alternative is used
+# altstarted:<experiment>:<alternative> = timestamp
+# e.g. altstarted:sale_3519_photo:6 => "1390348800"
+# TYPE=[none:none:string]
 
-# store total count for this alternative per day and hour
-# conversions:<experiment>:<alternative>:<date>:<hour> = count
+# Store total count for this alternative per day and hour
+# conversions:<experiment>:<alternative>:<category>:<date>:<hour> = count
+# e.g. conversions:sale_3519_photo:6:pageview:Tuesday, 21 January, 2014:16 => "5"
+# TYPE=[none:none:none:none:string]
 # participants:<experiment>:<alternative>:<date>:<hour> = count
+# e.g. participants:sale_3519_photo:6:Tuesday, 21 January, 2014:16 => "1"
+# TYPE=[none:none:none:string]
 
-# every so often store current epsilon
+# XXX Not actually implemented AFAICT
+# If epsilon_greedy player, every so often store current epsilon
 # state:<experiment>:<player>:epsilon = 0.1
+# e.g.
+# TYPE=[]
+
+# persistently store names of experiments
+# experiments:<experiment_name>
+# e.g. experiments:sale_3519_photo => {
+#              "name":"sale_3519_photo",
+#              "alternatives":[5,6],
+#              "title":"Stellavie  (3519 Photo Test",
+#              "description":"A test of the best sale photo for sale ID 3519" }
+# TYPE=[set:string]
 
 module Bandit
   class BaseStorage
@@ -124,6 +148,10 @@ module Bandit
       make_key [ "state", exp.name, player.name, varname ]
     end
 
+    def experiment_key(experiment_name)
+      make_key ["experiments", experiment_name]
+    end
+
     def make_key(parts)
       parts.join(":")
     end
@@ -132,27 +160,31 @@ module Bandit
       begin
         yield
       rescue Exception => e
-        # XXX JBB: Why retry here?  Rest of rescue block never gets called, and
-        #          with no terminal condition may become an infinite loop.
-        retry
         Bandit.storage_failed!
+        Rails.logger.error "Storage method #{self.class} failed.  Falling back to memory storage."
         fail_default
       end
     end
 
+    # XXX sadd() and smembers() are only implemented in Redis storage; should
+    #     make general for other storage types.
     def get_experiments
       smembers "experiments"
     end
 
     def get_experiment(experiment_name)
-      get make_key(["experiments", experiment_name])
+      get experiment_key(experiment_name)
     end
 
     def save_experiment(experiment)
       sadd "experiments", experiment.name
       hash = {}
-      experiment.instance_variables.each {|var| hash[var.to_s.delete("@")] = experiment.instance_variable_get(var) unless var.to_s == "@storage" }
-      set make_key(["experiments", experiment.name]), hash.to_json
+      experiment.instance_variables.each do |var|
+        unless var.to_s == "@storage"
+          hash[var.to_s.delete("@")] = experiment.instance_variable_get(var)
+        end
+      end
+      set experiment_key(experiment.name), hash.to_json
     end
   end
 end

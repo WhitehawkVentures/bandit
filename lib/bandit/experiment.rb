@@ -42,7 +42,7 @@ module Bandit
       experiments
     end
 
-    def choose(default=nil, category = nil)
+    def choose(default=nil, category=nil)
       if default && alternatives.include?(default)
         alt = default
       else
@@ -52,7 +52,7 @@ module Bandit
       alt
     end
 
-    def convert!(alt, category = nil, count=1)
+    def convert!(alt, category=nil, count=1)
       @storage.incr_conversions(self, alt, category, count)
     end
 
