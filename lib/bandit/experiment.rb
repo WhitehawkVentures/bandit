@@ -64,6 +64,73 @@ module Bandit
       }
     end
 
+    def improvement(alt, category)
+      if conversion_rate(alt, category) > 0
+        return (conversion_rate(alt, category)-conversion_rate(worst_alternative(category), category))/conversion_rate(alt, category)*100.0
+      else
+        return 0
+      end
+    end
+
+    def standard_error(alt, category)
+      p = conversion_rate(alt, category)/100.0
+      n = conversion_count(alt, category)
+
+      if n > 0
+        return Math.sqrt((p * [(1-p), 0].max) / n)*100.0
+      else
+        return 0
+      end
+    end
+    
+    def confidence_interval(alt, category)
+      standard_error(alt, category) * 1.96
+    end
+
+    def poz(z)
+      if (z == 0.0)
+        x = 0.0
+      else
+        y = 0.5 * z.abs
+        if (y > (6 * 0.5))
+          x = 1.0
+        elsif (y < 1.0)
+          w = y * y
+          x = ((((((((0.000124818987 * w
+          - 0.001075204047) * w + 0.005198775019) * w
+          - 0.019198292004) * w + 0.059054035642) * w
+          - 0.151968751364) * w + 0.319152932694) * w
+          - 0.531923007300) * w + 0.797884560593) * y * 2.0
+        else
+          y -= 2.0
+          x = (((((((((((((-0.000045255659 * y
+          + 0.000152529290) * y - 0.000019538132) * y
+          - 0.000676904986) * y + 0.001390604284) * y
+          - 0.000794620820) * y - 0.002034254874) * y
+          + 0.006549791214) * y - 0.010557625006) * y
+          + 0.011630447319) * y - 0.009279453341) * y
+          + 0.005353579108) * y - 0.002141268741) * y
+          + 0.000535310849) * y + 0.999936657524
+        end
+      end
+      return z > 0.0 ? ((x + 1.0) * 0.5) : ((1.0 - x) * 0.5)
+    end
+
+    def significance(alt, category)
+      worst = worst_alternative(category)
+      p_1 = conversion_rate(worst, category)/100.0
+      p_2 = conversion_rate(alt, category)/100.0
+      se_1 = standard_error(worst, category)/100.0
+      se_2 = standard_error(alt, category)/100.0
+
+      z_score = (p_2-p_1)/(Math.sqrt(se_1**2 + se_2**2))
+      if (Math.sqrt(se_1**2 + se_2**2)) == 0 || z_score > 6
+        return 0
+      else
+        return poz(z_score.abs)*100
+      end
+    end
+
     def conversion_count(alt, category, date_hour=nil)
       @storage.conversion_count(self, alt, category, date_hour)
     end
@@ -82,28 +149,46 @@ module Bandit
       (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
     end
 
+    def conversion_rate_low(alt, category)
+      conversion_rate(alt, category) - confidence_interval(alt, category)
+    end
+
+    def conversion_rate_high(alt, category)
+      conversion_rate(alt, category) + confidence_interval(alt, category)
+    end
+
     def alternative_start(alt)
       @storage.alternative_start_time(self, alt)
     end
 
-    def confidence_interval(alt)
-      total_participant_count = [self.total_participant_count, 1].max
-      alt_participant_count = [self.participant_count(alt), 1].max
-      # scale to 100 to match conversion_rate output
-      Math.sqrt(2 * Math.log(total_participant_count) / alt_participant_count) * 100
+    def best_alternative(category)
+      @best_alternative ||= begin
+        best = nil
+        best_rate = nil
+        self.alternatives.each { |alt|
+          rate = self.conversion_rate(alt, category)
+          if best_rate.nil? or rate > best_rate
+            best = alt
+            best_rate = rate
+          end
+        }
+        best
+      end
     end
 
-    def best_alternative(category)
-      best = nil
-      best_rate = nil
-      self.alternatives.each { |alt|
-        rate = self.conversion_rate(alt, category)
-        if best_rate.nil? or rate > best_rate
-          best = alt
-          best_rate = rate
-        end
-      }
-      best
+    def worst_alternative(category)
+      @worst_alternative ||= begin
+        worst = nil
+        worst_rate = nil
+        self.alternatives.each { |alt|
+          rate = self.conversion_rate(alt, category)
+          if worst_rate.nil? or rate < worst_rate
+            worst = alt
+            worst_rate = rate
+          end
+        }
+        worst
+      end
     end
   end
 end
