@@ -1,5 +1,10 @@
 module Bandit
   class Experiment
+    CONVERSION_CATEGORIES = { :pageview => :event_count,
+                              :add_to_cart => :event_count,
+                              :revenue => :cents,
+                              :purchase => :event_count}
+
     attr_accessor :name, :title, :description, :alternatives
 
     def self.create(name)
@@ -147,6 +152,12 @@ module Bandit
       pcount = participant_count(alt)
       ccount = conversion_count(alt, category)
       (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
+    end
+
+    def conversion_per_participant(alt, category)
+      pcount = participant_count(alt)
+      ccount = conversion_count(alt, category)
+      (pcount == 0 or ccount == 0) ? 0 : (ccount / pcount)
     end
 
     def conversion_rate_low(alt, category)

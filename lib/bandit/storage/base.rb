@@ -27,7 +27,7 @@
 # e.g.
 # TYPE=[]
 
-# persistently store names of experiments
+# Persistently store experiments, indexed by experiment_name
 # experiments:<experiment_name>
 # e.g. experiments:sale_3519_photo => {
 #              "name":"sale_3519_photo",
@@ -88,8 +88,8 @@ module Bandit
 
     def incr_conversions(experiment, alternative, category=nil, count=1, date_hour=nil)
       # increment total count and per hour count
-      incr conv_key(experiment, alternative, category), count
-      incr conv_key(experiment, alternative, category, date_hour || DateHour.now), count
+      incr conv_key(experiment, alternative, category.to_s), count
+      incr conv_key(experiment, alternative, category.to_s, date_hour || DateHour.now), count
     end
 
     def total_participant_count(experiment, date_hour=nil)
@@ -107,7 +107,7 @@ module Bandit
     # if date_hour isn't specified, get total count
     # if date_hour is specified, return count for DateHour
     def conversion_count(experiment, alternative, category, date_hour=nil)
-      get conv_key(experiment, alternative, category, date_hour)
+      get conv_key(experiment, alternative, category.to_s, date_hour)
     end
 
     def player_state_set(experiment, player, name, value)
@@ -139,7 +139,7 @@ module Bandit
     # if date_hour is nil, create key for total
     # otherwise, create key for hourly based
     def conv_key(exp, alt, category, date_hour=nil)
-      parts = [ "conversions", exp.name, alt, category ]
+      parts = [ "conversions", exp.name, alt, category.to_s ]
       parts += [ date_hour.date, date_hour.hour ] unless date_hour.nil?
       make_key parts
     end

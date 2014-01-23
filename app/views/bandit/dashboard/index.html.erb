@@ -9,8 +9,8 @@
   <p>
     <%= experiment.description %>
   </p>
-      <% ["pageview", "add_to_cart", "purchase", "revenue"].each do |conversion_category| %>
-          <h4><%= conversion_category.humanize.camelize %></h4>
+      <% Bandit::Experiment::CONVERSION_CATEGORIES.each_key do |conversion_category| %>
+          <h4><%= conversion_category.to_s.humanize.camelize %></h4>
           <%= render :partial => 'experiment_table', :locals => { :experiment => experiment, :category => conversion_category } %>
       <% end %>
   <% end %>

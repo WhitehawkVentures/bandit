@@ -8,6 +8,10 @@ module Bandit
       (percent * 100).round / 100.0
     end
 
+    def cents_to_dollars(cents=nil)
+      cents.to_s.to_d / 100
+    end
+
     def player_name
       Bandit.config.player.titleize
     end
