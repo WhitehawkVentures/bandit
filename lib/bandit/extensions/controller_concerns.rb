@@ -21,7 +21,7 @@ module Bandit
       alt ||= cookies.signed[cookiename]
       unless alt.nil?
         Bandit.get_experiment(exp) && Bandit.get_experiment(exp).convert!(alt, category, count)
-        cookies.delete(cookiename) if category == :purchase
+        cookies.delete(cookiename, :domain => "touchofmodern.com") if category == :purchase
       end
     end
 
@@ -31,7 +31,7 @@ module Bandit
       cookiename_converted = "bandit_#{exp}_#{category}_converted".intern
       alt ||= cookies.signed[cookiename]
       unless alt.nil? or cookies.signed[cookiename_converted]
-        cookies.permanent.signed[cookiename_converted] = "true"
+        cookies.permanent.signed[cookiename_converted] = { :value => "true", :domain => "touchofmodern.com" }
         Bandit.get_experiment(exp) && Bandit.get_experiment(exp).convert!(alt, category, count)
       end
     end
