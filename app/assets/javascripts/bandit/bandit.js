@@ -6,7 +6,7 @@ function show_chart_data(title, data, category) {
    var options = {
       chart: { renderTo: 'totals_gcontainer_' + category },
       title: { text: title },
-      rangeSelector: { selected: 1 },
+      rangeSelector: { selected: 5 },
       subtitle: { text: "participant / conversion totals" },
       yAxis: { title: { text: "people" } },
       series: []
@@ -15,7 +15,7 @@ function show_chart_data(title, data, category) {
    var percent_options = {
       chart: { renderTo: 'percents_gcontainer_' + category },
       title: { text: title },
-      rangeSelector: { selected: 1 },
+      rangeSelector: { selected: 5 },
       subtitle: { text: "conversion percents" },
       yAxis: { title: { text: "% converted" } },
       series: []
@@ -35,10 +35,14 @@ function show_chart_data(title, data, category) {
 		series_p = { data: [], name: ptitle };
 		series_percent = { data: [], name: percent_title, yDecimals: 2 };
 	     }
-	     var date = Date.UTC(parseInt(items[1]), parseInt(items[2]), parseInt(items[3]));
-	     var participants = parseFloat(items[4]);
-	     var conversions = parseFloat(items[5]);
-	     var conversion_percent = Math.round((conversions / participants) * 100) / 100;
+	     var date = Date.UTC(parseInt(items[1]), parseInt(items[2]), parseInt(items[3]), parseInt(items[4]));
+	     var participants = parseFloat(items[5]);
+	     var conversions = parseFloat(items[6]);
+         if (participants == 0) {
+            var conversion_percent = 0;
+         } else {
+	        var conversion_percent = (conversions / participants) * 100;
+         }
 	     series_p.data.push([date, participants]);
 	     series_c.data.push([date, conversions]);
 	     series_percent.data.push([date, conversion_percent]);

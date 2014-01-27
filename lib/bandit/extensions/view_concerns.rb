@@ -6,7 +6,7 @@ module Bandit
 
     # default choose is a session based choice
     def bandit_choose(exp, category = nil)
-      bandit_session_choose(exp, category)
+      bandit_sticky_choose(exp, category)
     end
 
     # always choose something new and increase the participant count

@@ -2,8 +2,8 @@
   <div class="title"><h1><%= @experiment.name.to_s.titleize %></h1></div>
   <p><%= @experiment.description %></p>
 
-  <% ["pageview", "add_to_cart", "purchase", "revenue"].each do |conversion_category| %>
-    <h4><%= conversion_category.humanize.camelize %></h4>
+  <% Bandit::Experiment::CONVERSION_CATEGORIES.each_key do |conversion_category| %>
+    <h4><%= conversion_category.to_s.humanize.camelize %></h4>
     <%= render :partial => 'experiment_table', :locals => { :experiment => @experiment, :category => conversion_category } %>
 
       <div id="percents_gcontainer_<%= conversion_category %>" class="graph"></div>
@@ -11,9 +11,7 @@
       <script>
           var url = "<%= bandit_path(@experiment.name, :category => conversion_category, :format => :csv) %>";
           var title = "<%= @experiment.name.to_s.titleize %>";
-          show_chart(title, url, '<%= conversion_category %>');
+          show_chart(title, url, '<%= conversion_category.to_s %>');
       </script>
   <% end %>
 </section>
-
-

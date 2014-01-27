@@ -17,7 +17,7 @@ module Bandit
       @storage = Bandit.storage
     end
     
-    def choose_alternative(experiment, category="purchase")
+    def choose_alternative(experiment, category=:purchase)
       # return the alternative that should be chosen
       raise NotImplementedError
     end

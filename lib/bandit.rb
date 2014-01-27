@@ -41,6 +41,8 @@ module Bandit
 
   def self.storage
     # try using configured storage at least once every 5 minutes until resolved
+    # XXX JBB: We should try harder than this to use Redis; memory storage is
+    #          useless in its current form.
     if @@storage_failure_at.nil? or (Time.now.to_i - @@storage_failure_at) > 300
       @storage ||= BaseStorage.get_storage(Bandit.config.storage.intern, Bandit.config.storage_config)
     else

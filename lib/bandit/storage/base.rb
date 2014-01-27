@@ -1,16 +1,40 @@
-# store total count for this alternative
-# conversions:<experiment>:<alternative> = count
+# Bandit keys:
+
+# Store total count for this alternative (+ by category for conversions)
+# conversions:<experiment>:<alternative>:<category> = count
+# e.g. conversions:sale_3519_photo:6:pageview => "9"
+# TYPE=[none:none:none:string]
 # participants:<experiment>:<alternative> = count
+# e.g. participants:sale_3519_photo:6 => "1"
+# TYPE=[none:none:string]
 
-# store first time an alternative is used
-# altstart:<experiment>:<alternative> = timestamp
+# Store first time an alternative is used
+# altstarted:<experiment>:<alternative> = timestamp
+# e.g. altstarted:sale_3519_photo:6 => "1390348800"
+# TYPE=[none:none:string]
 
-# store total count for this alternative per day and hour
-# conversions:<experiment>:<alternative>:<date>:<hour> = count
+# Store total count for this alternative per day and hour
+# conversions:<experiment>:<alternative>:<category>:<date>:<hour> = count
+# e.g. conversions:sale_3519_photo:6:pageview:Tuesday, 21 January, 2014:16 => "5"
+# TYPE=[none:none:none:none:string]
 # participants:<experiment>:<alternative>:<date>:<hour> = count
+# e.g. participants:sale_3519_photo:6:Tuesday, 21 January, 2014:16 => "1"
+# TYPE=[none:none:none:string]
 
-# every so often store current epsilon
+# XXX Not actually implemented AFAICT
+# If epsilon_greedy player, every so often store current epsilon
 # state:<experiment>:<player>:epsilon = 0.1
+# e.g.
+# TYPE=[]
+
+# Persistently store experiments, indexed by experiment_name
+# experiments:<experiment_name>
+# e.g. experiments:sale_3519_photo => {
+#              "name":"sale_3519_photo",
+#              "alternatives":[5,6],
+#              "title":"Stellavie  (3519 Photo Test",
+#              "description":"A test of the best sale photo for sale ID 3519" }
+# TYPE=[set:string]
 
 module Bandit
   class BaseStorage
@@ -64,8 +88,8 @@ module Bandit
 
     def incr_conversions(experiment, alternative, category=nil, count=1, date_hour=nil)
       # increment total count and per hour count
-      incr conv_key(experiment, alternative, category), count
-      incr conv_key(experiment, alternative, category, date_hour || DateHour.now), count
+      incr conv_key(experiment, alternative, category.to_s), count
+      incr conv_key(experiment, alternative, category.to_s, date_hour || DateHour.now), count
     end
 
     def total_participant_count(experiment, date_hour=nil)
@@ -83,7 +107,7 @@ module Bandit
     # if date_hour isn't specified, get total count
     # if date_hour is specified, return count for DateHour
     def conversion_count(experiment, alternative, category, date_hour=nil)
-      get conv_key(experiment, alternative, category, date_hour)
+      get conv_key(experiment, alternative, category.to_s, date_hour)
     end
 
     def player_state_set(experiment, player, name, value)
@@ -115,13 +139,17 @@ module Bandit
     # if date_hour is nil, create key for total
     # otherwise, create key for hourly based
     def conv_key(exp, alt, category, date_hour=nil)
-      parts = [ "conversions", exp.name, alt, category ]
+      parts = [ "conversions", exp.name, alt, category.to_s ]
       parts += [ date_hour.date, date_hour.hour ] unless date_hour.nil?
       make_key parts
     end
 
     def player_state_key(exp, player, varname)
       make_key [ "state", exp.name, player.name, varname ]
+    end
+
+    def experiment_key(experiment_name)
+      make_key ["experiments", experiment_name]
     end
 
     def make_key(parts)
@@ -132,25 +160,31 @@ module Bandit
       begin
         yield
       rescue Exception => e
-        retry
         Bandit.storage_failed!
+        Rails.logger.error "Storage method #{self.class} failed.  Falling back to memory storage."
         fail_default
       end
     end
 
+    # XXX sadd() and smembers() are only implemented in Redis storage; should
+    #     make general for other storage types.
     def get_experiments
       smembers "experiments"
     end
 
     def get_experiment(experiment_name)
-      get make_key(["experiments", experiment_name])
+      get experiment_key(experiment_name)
     end
 
     def save_experiment(experiment)
       sadd "experiments", experiment.name
       hash = {}
-      experiment.instance_variables.each {|var| hash[var.to_s.delete("@")] = experiment.instance_variable_get(var) unless var.to_s == "@storage" }
-      set make_key(["experiments", experiment.name]), hash.to_json
+      experiment.instance_variables.each do |var|
+        unless var.to_s == "@storage"
+          hash[var.to_s.delete("@")] = experiment.instance_variable_get(var)
+        end
+      end
+      set experiment_key(experiment.name), hash.to_json
     end
   end
 end
