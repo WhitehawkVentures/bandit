@@ -157,13 +157,13 @@ module Bandit
     end
 
     def with_failure_grace(fail_default=0)
-      begin
+      #begin
         yield
-      rescue Exception => e
-        Bandit.storage_failed!
-        Rails.logger.error "Storage method #{self.class} failed.  Falling back to memory storage."
-        fail_default
-      end
+      #rescue Exception => e
+      #  Bandit.storage_failed!
+      #  Rails.logger.error "Storage method #{self.class} failed.  Falling back to memory storage."
+      #  fail_default
+      #end
     end
 
     # XXX sadd() and smembers() are only implemented in Redis storage; should
