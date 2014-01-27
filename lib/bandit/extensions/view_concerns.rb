@@ -20,7 +20,9 @@ module Bandit
       # choose url param with preference
       value = params[name].nil? ? cookies.signed[name] : params[name]
       # choose with default, and set cookie
-      cookies.signed[name] = { :value => Bandit.get_experiment(exp).choose(value, category), :domain => "touchofmodern.com" }
+      alternative = Bandit.get_experiment(exp).choose(value, category)
+      cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com" }
+      alternative
     end
 
     # stick to one alternative until user deletes cookies or changes browser
@@ -36,6 +38,7 @@ module Bandit
                     end
       # re-set cookie
       cookies.permanent.signed[name] = { :value => alternative, :domain => "touchofmodern.com" }
+      alternative
     end
   end
 end
