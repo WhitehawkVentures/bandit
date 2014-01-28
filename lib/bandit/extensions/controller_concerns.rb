@@ -15,10 +15,9 @@ module Bandit
     # Delete any we find.
     def delete_v0_cookies
       cookies.each do |cookie|
-        old_name = "bandit_#{exp}".intern
-        if cookie.has_key?(old_name)
-          cookies.delete(key, :domain => "touchofmodern.com")
-          cookies.delete(key, :domain => "www.touchofmodern.com")
+        if cookie[0].include?("bandit_")
+          cookies.delete(cookie[0], :domain => "touchofmodern.com")
+          cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
         end
       end
     end
