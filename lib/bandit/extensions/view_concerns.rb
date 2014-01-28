@@ -6,12 +6,12 @@ module Bandit
 
     # default choose is a session based choice
     def bandit_choose(exp, category = nil)
-      cookies.each_pair do |key, value|
-        if key.include?("bandit_")
-          cookies.delete(key, :domain => "touchofmodern.com")
-          cookies.delete(key, :domain => "www.touchofmodern.com")
-        end
-      end
+      #cookies.each_pair do |key, value|
+      #  if key.include?("bandit_")
+      #    cookies.delete(key, :domain => "touchofmodern.com")
+      #    cookies.delete(key, :domain => "www.touchofmodern.com")
+      #  end
+      #end
       bandit_sticky_choose(exp, category)
     end
 
