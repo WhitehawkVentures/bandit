@@ -6,6 +6,12 @@ module Bandit
 
     # default choose is a session based choice
     def bandit_choose(exp, category = nil)
+      cookies.each_pair do |key, value|
+        if key.include?("bandit_")
+          cookies.delete(key, :domain => "touchofmodern.com")
+          cookies.delete(key, :domain => "www.touchofmodern.com")
+        end
+      end
       bandit_sticky_choose(exp, category)
     end
 
@@ -16,28 +22,30 @@ module Bandit
 
     # stick to one alternative for the entire browser session
     def bandit_session_choose(exp, category = nil)
-      name = "bandit_#{exp}".intern
+      name = "bt_#{exp}".intern
       # choose url param with preference
       value = params[name].nil? ? cookies.signed[name] : params[name]
       # choose with default, and set cookie
-      alternative = Bandit.get_experiment(exp).choose(value, category)
-      cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com" }
+      experiment = Bandit.get_experiment(exp)
+      alternative = experiment.choose(value, category)
+      cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       alternative
     end
 
     # stick to one alternative until user deletes cookies or changes browser
     def bandit_sticky_choose(exp, category = nil)
-      name = "bandit_#{exp}".intern
+      name = "bt_#{exp}".intern
       # choose url param with preference
       value = params[name].nil? ? cookies.signed[name] : params[name]
       # sticky choice may outlast a given alternative
-      alternative = if Bandit.get_experiment(exp).alternatives.include?(value)
+      experiment = Bandit.get_experiment(exp)
+      alternative = if experiment.alternatives.include?(value)
                       value
                     else
-                      Bandit.get_experiment(exp).choose(value, category)
+                      experiment.choose(value, category)
                     end
       # re-set cookie
-      cookies.permanent.signed[name] = { :value => alternative, :domain => "touchofmodern.com" }
+      cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       alternative
     end
   end

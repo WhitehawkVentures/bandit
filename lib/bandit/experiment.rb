@@ -5,7 +5,7 @@ module Bandit
                               :revenue => :cents,
                               :purchase => :event_count}
 
-    attr_accessor :name, :title, :description, :alternatives
+    attr_accessor :name, :title, :description, :alternatives, :expiration_date
 
     def self.create(name)
       e = Experiment.new(:name => name)
