@@ -11,6 +11,7 @@ module Bandit
         if cookie[0].include?("bandit_")
           cookies.delete(cookie[0], :domain => "touchofmodern.com")
           cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
+          cookies.delete(cookie[0])
         end
       end
     end
