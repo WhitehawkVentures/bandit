@@ -6,7 +6,21 @@ module Bandit
 
     # default convert is a session based conversion
     def bandit_convert!(exp, alt, category=nil, count=1)
+      delete_v0_cookies
       bandit_session_convert!(exp, alt, category, count)
+    end
+
+
+    # The 1st version of our cookies did not expire and grew too large.
+    # Delete any we find.
+    def delete_v0_cookies
+      cookies.each do |cookie|
+        old_name = "bandit_#{exp}".intern
+        if cookie.has_key?(old_name)
+          cookies.delete(key, :domain => "touchofmodern.com")
+          cookies.delete(key, :domain => "www.touchofmodern.com")
+        end
+      end
     end
 
     # look mum, no cookies
