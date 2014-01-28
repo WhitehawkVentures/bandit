@@ -8,39 +8,12 @@ module Bandit
     # Delete any we find.
     def delete_v0_cookies
       cookies.each do |cookie|
-        Rails.logger.error("cookie name: #{cookie[0]}")
         if cookie[0].include?("bandit_")
-          Rails.logger.error("attempting to delete: #{cookie[0]}")
-          cookies[cookie[0]] = ""
-          cookies[cookie[0]] = nil
-          cookies[cookie[0].intern] = ""
-          cookies[cookie[0].intern] = nil
-          cookies[cookie[0]] = { :value => nil }
-          cookies[cookie[0]] = { :value => "" }
-          cookies[cookie[0].intern] = { :value => nil }
-          cookies[cookie[0].intern] = { :value => "" }
-          cookies[cookie[0].intern] = { :value => nil, :expires => 1.day.ago }
-          cookies[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => "www.touchofmodern.com" }
-          cookies[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => "touchofmodern.com" }
-          cookies[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => ".touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => nil, :expires => 1.day.ago }
-          cookies.signed[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => "www.touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => "touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => nil, :expires => 1.day.ago, :domain => ".touchofmodern.com" }
-          cookies[cookie[0].intern] = { :value => "", :expires => 1.day.ago }
-          cookies[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => "www.touchofmodern.com" }
-          cookies[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => "touchofmodern.com" }
-          cookies[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => ".touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => "", :expires => 1.day.ago }
-          cookies.signed[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => "www.touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => "touchofmodern.com" }
-          cookies.signed[cookie[0].intern] = { :value => "", :expires => 1.day.ago, :domain => ".touchofmodern.com" }
           cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
           cookies.delete(cookie[0], :domain => ".touchofmodern.com")
           cookies.delete(cookie[0], :domain => "touchofmodern.com")
           cookies.delete(cookie[0], :domain => :all)
           cookies.delete(cookie[0])
-          Rails.logger.error("quit attempting to delete: #{cookie[0]}")
         end
       end
     end
