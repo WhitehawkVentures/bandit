@@ -11,8 +11,10 @@ module Bandit
         Rails.logger.error("cookie name: #{cookie[0]}")
         if cookie[0].include?("bandit_")
           Rails.logger.error("attempting to delete: #{cookie[0]}")
-          cookies.delete(cookie[0], :domain => "touchofmodern.com")
+          cookies[cookie[0]] = { :value => "", :expires => 1.day.ago }
           cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
+          cookies.delete(cookie[0], :domain => ".touchofmodern.com")
+          cookies.delete(cookie[0], :domain => "touchofmodern.com")
           cookies.delete(cookie[0], :domain => :all)
           cookies.delete(cookie[0])
         end
