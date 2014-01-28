@@ -4,14 +4,20 @@ module Bandit
   module ViewConcerns
     extend ActiveSupport::Concern
 
+    # The 1st version of our cookies did not expire and grew too large.
+    # Delete any we find.
+    def delete_v0_cookies
+      cookies.each do |cookie|
+        if cookie[0].include?("bandit_")
+          cookies.delete(cookie[0], :domain => "touchofmodern.com")
+          cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
+        end
+      end
+    end
+
     # default choose is a session based choice
     def bandit_choose(exp, category = nil)
-      #cookies.each_pair do |key, value|
-      #  if key.include?("bandit_")
-      #    cookies.delete(key, :domain => "touchofmodern.com")
-      #    cookies.delete(key, :domain => "www.touchofmodern.com")
-      #  end
-      #end
+      delete_v0_cookies
       bandit_sticky_choose(exp, category)
     end
 
