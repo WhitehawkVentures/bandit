@@ -8,7 +8,9 @@ module Bandit
     # Delete any we find.
     def delete_v0_cookies
       cookies.each do |cookie|
+        Rails.logger.info("cookie name: #{cookie[0]}")
         if cookie[0].include?("bandit_")
+          Rails.logger.info("attempting to delete: #{cookie[0]}")
           cookies.delete(cookie[0], :domain => "touchofmodern.com")
           cookies.delete(cookie[0], :domain => "www.touchofmodern.com")
           cookies.delete(cookie[0], :domain => :all)
