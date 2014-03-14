@@ -9,7 +9,7 @@ class Bandit::DashboardController < Bandit::ApplicationController
     @experiment = Bandit.get_experiment params[:id].intern
     respond_to do |format|
       format.html
-      format.csv { render :text => experiment_csv(@experiment, params[:category]) }
+      format.csv { render :text => experiment_csv(@experiment, params[:category].intern) }
     end
   end
 
