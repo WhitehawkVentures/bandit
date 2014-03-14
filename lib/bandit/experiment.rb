@@ -79,7 +79,7 @@ module Bandit
 
     def standard_error(alt, category)
       p = conversion_rate(alt, category)/100.0
-      n = participant_count(alt, category)
+      n = participant_count(alt)
 
       if n > 0
         return Math.sqrt((p * [(1-p), 0].max) / n)*100.0
