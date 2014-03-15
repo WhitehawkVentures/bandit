@@ -35,7 +35,7 @@ function show_chart_data(title, data, category) {
 		series_p = { data: [], name: ptitle };
 		series_percent = { data: [], name: percent_title, yDecimals: 2 };
 	     }
-	     var date = Date.UTC(parseInt(items[1]), parseInt(items[2]), parseInt(items[3]), parseInt(items[4]));
+	     var date = Date.UTC(parseInt(items[1]), parseInt(items[2])-1, parseInt(items[3]), parseInt(items[4]));
 	     var participants = parseFloat(items[5]);
 	     var conversions = parseFloat(items[6]);
          if (participants == 0) {
