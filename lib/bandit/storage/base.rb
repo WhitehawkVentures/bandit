@@ -127,7 +127,7 @@ module Bandit
     # otherwise, create key for hourly based
     def part_key(exp, alt, date_hour=nil)
       parts = [ "participants", exp.name, alt ]
-      parts += [ date_hour.date, date_hour.hour ] unless date_hour.nil?
+      parts += [ date_hour.date.strftime("%Y-%m-%d"), date_hour.hour ] unless date_hour.nil?
       make_key parts
     end
 
@@ -140,7 +140,7 @@ module Bandit
     # otherwise, create key for hourly based
     def conv_key(exp, alt, category, date_hour=nil)
       parts = [ "conversions", exp.name, alt, category.to_s ]
-      parts += [ date_hour.date, date_hour.hour ] unless date_hour.nil?
+      parts += [ date_hour.date.strftime("%Y-%m-%d"), date_hour.hour ] unless date_hour.nil?
       make_key parts
     end
 
