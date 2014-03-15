@@ -25,7 +25,7 @@ class Bandit::DashboardController < Bandit::ApplicationController
           pcount = experiment.participant_count(alt, dh)
           ccount = experiment.conversion_count(alt, category, dh)
           if pcount > 0
-            rows << [ alt, d.year, d.month, d.day, dh.hour, pcount, ccount ].join("\t")
+            rows << [ alt, d.year, d.month, d.day, dh.hour, pcount, [pcount, ccount].min ].join("\t")
           end
         }
       end
