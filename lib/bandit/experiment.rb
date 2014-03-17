@@ -70,7 +70,8 @@ module Bandit
     end
 
     def improvement(alt, category)
-      if conversion_rate(alt, category) > 0 && conversion_rate(worst_alternative(category) > 0
+      if conversion_rate(alt, category) > 0 &&
+                                      conversion_rate(worst_alternative(category), category) > 0
         return (conversion_rate(alt, category)-conversion_rate(worst_alternative(category), category))/conversion_rate(worst_alternative(category), category)*100.0
       else
         return 0
