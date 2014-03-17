@@ -78,8 +78,7 @@ module Bandit
                       experiment.choose(value, category)
                     end
       # re-set cookie
-      session[name.intern] = alternative
-      #cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
+      cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       alternative
     end
   end

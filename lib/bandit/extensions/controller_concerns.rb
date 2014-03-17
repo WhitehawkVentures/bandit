@@ -18,7 +18,7 @@ module Bandit
     def bandit_session_convert!(exp, alt, category=nil, count=1)
       cookiename = "bt_#{exp}".intern
       cookiename_converted = "bt_#{exp}_#{category}_converted".intern
-      alt ||= cookies.signed[cookiename] || session[cookiename.intern]
+      alt ||= cookies.signed[cookiename]
       experiment = Bandit.get_experiment(exp)
       unless alt.nil?
         Bandit.get_experiment(exp) && Bandit.get_experiment(exp).convert!(alt, category, count)
