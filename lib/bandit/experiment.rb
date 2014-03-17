@@ -71,7 +71,7 @@ module Bandit
 
     def improvement(alt, category)
       if conversion_rate(alt, category) > 0
-        return (conversion_rate(alt, category)-conversion_rate(worst_alternative(category), category))/conversion_rate(alt, category)*100.0
+        return (conversion_rate(alt, category)-conversion_rate(worst_alternative(category), category))/conversion_rate(worst_alternative(category), category)*100.0
       else
         return 0
       end
@@ -173,7 +173,9 @@ module Bandit
     end
 
     def best_alternative(category)
-      @best_alternative ||= begin
+      if instance_variable_get("@best_alternative_#{category.to_s}").present?
+        return instance_variable_get("@best_alternative_#{category.to_s}")
+      else
         best = nil
         best_rate = nil
         self.alternatives.each { |alt|
@@ -183,12 +185,15 @@ module Bandit
             best_rate = rate
           end
         }
-        best
+        instance_variable_set("@best_alternative_#{category.to_s}", best)
+        return best
       end
     end
 
     def worst_alternative(category)
-      @worst_alternative ||= begin
+      if instance_variable_get("@worst_alternative_#{category.to_s}").present?
+        return instance_variable_get("@worst_alternative_#{category.to_s}")
+      else
         worst = nil
         worst_rate = nil
         self.alternatives.each { |alt|
@@ -198,7 +203,8 @@ module Bandit
             worst_rate = rate
           end
         }
-        worst
+        instance_variable_set("@worst_alternative_#{category.to_s}", worst)
+        return worst
       end
     end
   end
