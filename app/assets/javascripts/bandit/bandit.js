@@ -41,7 +41,7 @@ function show_chart_data(title, data, category) {
          if (participants == 0) {
             var conversion_percent = 0;
          } else {
-	        var conversion_percent = (conversions / participants) * 100;
+	        var conversion_percent = Math.round((conversions / participants) * 100 * 10000) / 10000;
          }
 	     series_p.data.push([date, participants]);
 	     series_c.data.push([date, conversions]);
