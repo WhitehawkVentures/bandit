@@ -65,7 +65,7 @@ module Bandit
   end
 
   def self.experiments
-    Experiment.instances
+    @@experiments ||= Experiment.instances
   end
 end
 
