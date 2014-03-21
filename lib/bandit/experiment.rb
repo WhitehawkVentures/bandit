@@ -16,15 +16,30 @@ module Bandit
     end
 
     def self.create_or_attach(name)
-      if Bandit.experiments.include?(name.to_s)
-        experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      experiment = Bandit.storage.get_experiment(name)
+      if experiment
+        experiment = Experiment.new(JSON.parse(experiment))
         yield experiment
       else
         experiment = Experiment.create(name) do |e|
           yield e
         end
       end
-      experiment
+      experiment  
+      
+      # if Bandit.experiments.include?(name.to_s)
+      #   experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      #   yield experiment
+      # else
+      #   experiment = Experiment.create(name) do |e|
+      #     yield e
+      #   end
+      # end
+      # experiment
+    end
+    
+    def self.get(name)
+      experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
     end
 
     def save
@@ -168,13 +183,13 @@ module Bandit
     end
 
     def conversion_rate(alt, category)
-      if instance_variable_get("@conversion_rate_#{alt.to_s}_#{{category.to_s}}").present?
-        return instance_variable_get("@conversion_rate_#{alt.to_s}_#{{category.to_s}}")
+      if instance_variable_get("@conversion_rate_#{alt.to_s}_#{category.to_s}").present?
+        return instance_variable_get("@conversion_rate_#{alt.to_s}_#{category.to_s}")
       else
         pcount = participant_count(alt)
         ccount = conversion_count(alt, category)
         conversion_rate = (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
-        instance_variable_set("@conversion_rate_#{alt.to_s}_#{{category.to_s}}", conversion_rate)
+        instance_variable_set("@conversion_rate_#{alt.to_s}_#{category.to_s}", conversion_rate)
         return conversion_rate
       end
     end
