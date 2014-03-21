@@ -39,7 +39,11 @@ module Bandit
     end
     
     def self.get(name)
-      experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      if Bandit.storage.get_experiment(name).present?
+        experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      else
+        nil
+      end
     end
 
     def save
