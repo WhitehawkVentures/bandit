@@ -39,7 +39,7 @@ module Bandit
     end
     
     def self.get(name)
-      if Bandit.storage.get_experiment(name).present?
+      if Bandit.storage.get_experiment(name).present? && Bandit.storage.get_experiment(name) != 0
         experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
       else
         nil
