@@ -153,31 +153,31 @@ module Bandit
     end
 
     def conversion_count(alt, category, date_hour=nil)
-      if instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}").present?
-        return instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}")
+      if instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}").present?
+        return instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}")
       else
         conversion_count = @storage.conversion_count(self, alt, category, date_hour)
-        instance_variable_set("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}", conversion_count)
+        instance_variable_set("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}", conversion_count)
         return conversion_count
       end
     end
 
     def participant_count(alt, date_hour=nil)
-      if instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_s}").present?
-        return instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_s}")
+      if instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_i}").present?
+        return instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_i}")
       else
         participant_count = @storage.participant_count(self, alt, date_hour)
-        instance_variable_set("@participant_count_#{alt.to_s}_#{date_hour.to_s}", participant_count)
+        instance_variable_set("@participant_count_#{alt.to_s}_#{date_hour.to_i}", participant_count)
         return participant_count
       end
     end
 
     def total_participant_count(date_hour=nil)
-      if instance_variable_get("@total_participant_count_#{date_hour.to_s}").present?
-        return instance_variable_get("@total_participant_count_#{date_hour.to_s}")
+      if instance_variable_get("@total_participant_count_#{date_hour.to_i}").present?
+        return instance_variable_get("@total_participant_count_#{date_hour.to_i}")
       else
         total_participant_count = @storage.total_participant_count(self, date_hour)
-        instance_variable_set("@total_participant_count_#{date_hour.to_s}", total_participant_count)
+        instance_variable_set("@total_participant_count_#{date_hour.to_i}", total_participant_count)
         return total_participant_count
       end
     end
