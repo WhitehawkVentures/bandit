@@ -138,21 +138,45 @@ module Bandit
     end
 
     def conversion_count(alt, category, date_hour=nil)
-      @storage.conversion_count(self, alt, category, date_hour)
+      if instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}").present?
+        return instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}")
+      else
+        conversion_count = @storage.conversion_count(self, alt, category, date_hour)
+        instance_variable_set("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_s}", conversion_count)
+        return conversion_count
+      end
     end
 
     def participant_count(alt, date_hour=nil)
-      @storage.participant_count(self, alt, date_hour)
+      if instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_s}").present?
+        return instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_s}")
+      else
+        participant_count = @storage.participant_count(self, alt, date_hour)
+        instance_variable_set("@participant_count_#{alt.to_s}_#{date_hour.to_s}", participant_count)
+        return participant_count
+      end
     end
 
     def total_participant_count(date_hour=nil)
-      @storage.total_participant_count(self, date_hour)
+      if instance_variable_get("@total_participant_count_#{date_hour.to_s}").present?
+        return instance_variable_get("@total_participant_count_#{date_hour.to_s}")
+      else
+        total_participant_count = @storage.total_participant_count(self, date_hour)
+        instance_variable_set("@total_participant_count_#{date_hour.to_s}", total_participant_count)
+        return total_participant_count
+      end
     end
 
     def conversion_rate(alt, category)
-      pcount = participant_count(alt)
-      ccount = conversion_count(alt, category)
-      (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
+      if instance_variable_get("@conversion_rate_#{alt.to_s}_#{{category.to_s}}").present?
+        return instance_variable_get("@conversion_rate_#{alt.to_s}_#{{category.to_s}}")
+      else
+        pcount = participant_count(alt)
+        ccount = conversion_count(alt, category)
+        conversion_rate = (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
+        instance_variable_set("@conversion_rate_#{alt.to_s}_#{{category.to_s}}", conversion_rate)
+        return conversion_rate
+      end
     end
 
     def conversion_per_participant(alt, category)
@@ -170,7 +194,13 @@ module Bandit
     end
 
     def alternative_start(alt)
-      @storage.alternative_start_time(self, alt)
+      if instance_variable_get("@alternative_start_#{alt.to_s}").present?
+        return instance_variable_get("@alternative_start_#{alt.to_s}")
+      else
+        alternative_start = @storage.alternative_start_time(self, alt)
+        instance_variable_set("@alternative_start_#{alt.to_s}", alternative_start)
+        return alternative_start
+      end
     end
 
     def best_alternative(category)
