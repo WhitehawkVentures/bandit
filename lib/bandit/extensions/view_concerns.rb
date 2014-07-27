@@ -50,7 +50,7 @@ module Bandit
 
     # always choose something new and increase the participant count
     def bandit_simple_choose(exp, category = nil)
-      Bandit.get_experiment(exp).choose(nil, category)
+      Bandit.get_experiment(exp).choose(nil, category, is_robot?)
     end
 
     # stick to one alternative for the entire browser session
@@ -75,7 +75,7 @@ module Bandit
       alternative = if experiment.alternatives.include?(value)
                       value
                     else
-                      experiment.choose(value, category)
+                      experiment.choose(value, category, is_robot?)
                     end
       # re-set cookie
       cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
@@ -83,7 +83,10 @@ module Bandit
     end
 
     def is_robot?
-      defined?(request) && request.user_agent =~ Bandit.robot_regex
+        puts request.user_agent
+        puts Bandit::Config.robot_regex
+        puts request.user_agent =~ Bandit::Config.robot_regex
+        defined?(request) && request.user_agent =~ Bandit::Config.robot_regex
     end
   end
 end

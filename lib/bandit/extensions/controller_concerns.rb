@@ -21,7 +21,7 @@ module Bandit
       alt ||= cookies.signed[cookiename]
       experiment = Bandit.get_experiment(exp)
       unless alt.nil?
-        Bandit.get_experiment(exp) && Bandit.get_experiment(exp).convert!(alt, category, count)
+        Bandit.get_experiment(exp) && Bandit.get_experiment(exp).convert!(alt, category, count, is_robot?)
         cookies.signed[cookiename] = { :value => alt, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 5.days.from_now }
         cookies.delete(cookiename, :domain => "touchofmodern.com") if category == :purchase
       end
@@ -35,8 +35,12 @@ module Bandit
       unless alt.nil? or cookies.signed[cookiename_converted]
         experiment = Bandit.get_experiment(exp)
         cookies.signed[cookiename_converted] = { :value => "true", :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 5.days.from_now }
-        experiment && experiment.convert!(alt, category, count)
+        experiment && experiment.convert!(alt, category, count, is_robot?)
       end
+    end
+    
+    def is_robot?
+        defined?(request) && request.user_agent =~ Bandit.robot_regex
     end
   end
 end

@@ -31,7 +31,7 @@ module Bandit
       @player_config ||= {}
     end
 
-    def bots
+    def self.bots
       @bots ||= {
         # Indexers
         'AdsBot-Google' => 'Google Adwords',
@@ -99,12 +99,12 @@ module Bandit
       }
     end
 
-    def robot_regex
+    def self.robot_regex
       @robot_regex ||= /\b(?:#{escaped_bots.join('|')})\b|\A\W*\z/i
     end
 
     private
-    def escaped_bots
+    def self.escaped_bots
       bots.map { |key, _| Regexp.escape(key) }
     end
 
