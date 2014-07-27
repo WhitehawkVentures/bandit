@@ -66,18 +66,23 @@ module Bandit
       experiments
     end
 
-    def choose(default=nil, category=nil)
+    def choose(default=nil, category=nil, exclude=nil)
       if default && alternatives.include?(default)
         alt = default
       else
         alt = Bandit.player.choose_alternative(self, category)
-        @storage.incr_participants(self, alt)
+        unless exclude
+            @storage.incr_participants(self, alt)
+        end
       end
       alt
     end
 
-    def convert!(alt, category=nil, count=1)
-      @storage.incr_conversions(self, alt, category, count)
+    def convert!(alt, category=nil, count=1, exclude=nil)
+        unless exclude
+            
+            @storage.incr_conversions(self, alt, category, count)
+        end
     end
 
     def validate!

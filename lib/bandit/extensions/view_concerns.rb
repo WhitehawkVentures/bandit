@@ -60,7 +60,7 @@ module Bandit
       value = params[name].nil? ? cookies.signed[name] : params[name]
       # choose with default, and set cookie
       experiment = Bandit.get_experiment(exp)
-      alternative = experiment.choose(value, category)
+      alternative = experiment.choose(value, category, is_robot?)
       cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       alternative
     end
@@ -80,6 +80,10 @@ module Bandit
       # re-set cookie
       cookies.signed[name] = { :value => alternative, :domain => "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       alternative
+    end
+
+    def is_robot?
+      defined?(request) && request.user_agent =~ Bandit.robot_regex
     end
   end
 end
