@@ -72,6 +72,7 @@ module Bandit
       else
         alt = Bandit.player.choose_alternative(self, category)
         unless exclude
+            puts "did not block - normal user"
             @storage.incr_participants(self, alt)
         else
             puts "BOT BLOCKED"
@@ -81,7 +82,8 @@ module Bandit
     end
 
     def convert!(alt, category=nil, count=1, exclude=nil)
-        unless exclude    
+        unless exclude
+            puts "did not block - normal user"
             @storage.incr_conversions(self, alt, category, count)
         else
             puts "BOT BLOCKED"
