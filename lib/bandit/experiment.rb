@@ -73,15 +73,18 @@ module Bandit
         alt = Bandit.player.choose_alternative(self, category)
         unless exclude
             @storage.incr_participants(self, alt)
+        else
+            puts "BOT BLOCKED"
         end
       end
       alt
     end
 
     def convert!(alt, category=nil, count=1, exclude=nil)
-        unless exclude
-            
+        unless exclude    
             @storage.incr_conversions(self, alt, category, count)
+        else
+            puts "BOT BLOCKED"
         end
     end
 
