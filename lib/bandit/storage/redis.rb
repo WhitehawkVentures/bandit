@@ -54,7 +54,7 @@ module Bandit
     end
 
     def del(key)
-      with_failure_grace(value) {
+      with_failure_grace(key) {
         @redis.del(key)
       }
     end
