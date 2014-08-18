@@ -131,7 +131,7 @@ module Bandit
     end
 
     def is_robot?
-      defined?(request) && request.user_agent =~ Bandit.robot_regex
+      defined?(request) && request.user_agent =~ Bandit::Config.robot_regex
     end
   end
 end

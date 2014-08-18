@@ -76,7 +76,7 @@ module Bandit
             puts "did not block - normal user"
             @storage.incr_participants(self, alt)
         else
-        Rails.logger.info("BOT BLOCKED")
+          Rails.logger.info("BOT BLOCKED")
             puts "BOT BLOCKED"
         end
       end
