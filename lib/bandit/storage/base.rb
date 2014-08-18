@@ -70,6 +70,14 @@ module Bandit
       raise NotImplementedError
     end
 
+    def expire(key, seconds)
+      raise NotImplementedError
+    end
+
+    def del(key)
+      raise NotImplementedError
+    end
+
     # clear all stored values
     def clear!
       raise NotImplementedError
@@ -108,6 +116,20 @@ module Bandit
     # if date_hour is specified, return count for DateHour
     def conversion_count(experiment, alternative, category, date_hour=nil)
       get conv_key(experiment, alternative, category.to_s, date_hour)
+    end
+
+    def states_set(uuid, experiment, state)
+      set(states_key(uuid, experiment), state)
+      expire(states_key(uuid, experiment), 604800)
+    end
+
+    def states_get(uuid, experiment)
+      value = get states_key(uuid, experiment), nil
+      return value
+    end
+
+    def states_delete(uuid, experiment)
+      del(states_key(uuid, experiment))
     end
 
     def player_state_set(experiment, player, name, value)
@@ -150,6 +172,10 @@ module Bandit
 
     def experiment_key(experiment_name)
       make_key ["experiments", experiment_name]
+    end
+
+    def states_key(uuid, experiment)
+      make_key ["states", uuid, experiment]
     end
 
     def make_key(parts)

@@ -47,6 +47,18 @@ module Bandit
       }
     end
 
+    def expire(key, value)
+      with_failure_grace(value) {
+        @redis.expire(key, value)
+      }
+    end
+
+    def delete(key)
+      with_failure_grace(value) {
+        @redis.del(key)
+      }
+    end
+
     def sadd(key, value)
       with_failure_grace(value) {
         @redis.sadd(key, value)
