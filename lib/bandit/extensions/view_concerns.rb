@@ -74,7 +74,7 @@ module Bandit
       value = params[name].nil? ? state : params[name]
       # choose with default, and set cookie
       experiment = Bandit.get_experiment(exp)
-      alternative = experiment.choose(value, category)
+      alternative = experiment.choose(value, category, is_robot?)
       Bandit.storage.states_set(uuid, exp, alternative)
       alternative
 
@@ -106,7 +106,7 @@ module Bandit
       alternative = if experiment.alternatives.include?(value)
                       value
                     else
-                      experiment.choose(value, category)
+                      experiment.choose(value, category, is_robot?)
                     end
       Bandit.storage.states_set(uuid, exp, alternative)
       alternative
@@ -127,6 +127,10 @@ module Bandit
       ## re-set cookie
       #cookies.signed[name] = { :value => alternative, :domain => Rails.env.development? ? "touchofmodern.local" : "touchofmodern.com", :expires => experiment.expiration_date.present? ? Time.parse(experiment.expiration_date) : 7.days.from_now }
       #alternative
+    end
+
+    def is_robot?
+      defined?(request) && request.user_agent =~ Bandit.robot_regex
     end
   end
 end
