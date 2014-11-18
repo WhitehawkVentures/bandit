@@ -16,15 +16,34 @@ module Bandit
     end
 
     def self.create_or_attach(name)
-      if Bandit.experiments.include?(name.to_s)
-        experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      experiment = Bandit.storage.get_experiment(name)
+      if experiment
+        experiment = Experiment.new(JSON.parse(experiment))
         yield experiment
       else
         experiment = Experiment.create(name) do |e|
           yield e
         end
       end
-      experiment
+      experiment  
+      
+      # if Bandit.experiments.include?(name.to_s)
+      #   experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      #   yield experiment
+      # else
+      #   experiment = Experiment.create(name) do |e|
+      #     yield e
+      #   end
+      # end
+      # experiment
+    end
+    
+    def self.get(name)
+      if Bandit.storage.get_experiment(name).present? && Bandit.storage.get_experiment(name) != 0
+        experiment = Experiment.new(JSON.parse(Bandit.storage.get_experiment(name)))
+      else
+        nil
+      end
     end
 
     def save
@@ -47,18 +66,32 @@ module Bandit
       experiments
     end
 
-    def choose(default=nil, category=nil)
+    def choose(default=nil, category=nil, exclude=nil)
       if default && alternatives.include?(default)
         alt = default
       else
         alt = Bandit.player.choose_alternative(self, category)
-        @storage.incr_participants(self, alt)
+        unless exclude
+            Rails.logger.info("did not block - normal user")
+            puts "did not block - normal user"
+            @storage.incr_participants(self, alt)
+        else
+          Rails.logger.info("BOT BLOCKED")
+            puts "BOT BLOCKED"
+        end
       end
       alt
     end
 
-    def convert!(alt, category=nil, count=1)
-      @storage.incr_conversions(self, alt, category, count)
+    def convert!(alt, category=nil, count=1, exclude=nil)
+        unless exclude
+            puts "did not block - normal user"
+            Rails.logger.info("did not block - normal user")
+            @storage.incr_conversions(self, alt, category, count)
+        else
+        Rails.logger.info("BOT BLOCKED")
+            puts "BOT BLOCKED"
+        end
     end
 
     def validate!
@@ -138,21 +171,45 @@ module Bandit
     end
 
     def conversion_count(alt, category, date_hour=nil)
-      @storage.conversion_count(self, alt, category, date_hour)
+      if instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}").present?
+        return instance_variable_get("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}")
+      else
+        conversion_count = @storage.conversion_count(self, alt, category, date_hour)
+        instance_variable_set("@conversion_count_#{alt.to_s}_#{category.to_s}_#{date_hour.to_i}", conversion_count)
+        return conversion_count
+      end
     end
 
     def participant_count(alt, date_hour=nil)
-      @storage.participant_count(self, alt, date_hour)
+      if instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_i}").present?
+        return instance_variable_get("@participant_count_#{alt.to_s}_#{date_hour.to_i}")
+      else
+        participant_count = @storage.participant_count(self, alt, date_hour)
+        instance_variable_set("@participant_count_#{alt.to_s}_#{date_hour.to_i}", participant_count)
+        return participant_count
+      end
     end
 
     def total_participant_count(date_hour=nil)
-      @storage.total_participant_count(self, date_hour)
+      if instance_variable_get("@total_participant_count_#{date_hour.to_i}").present?
+        return instance_variable_get("@total_participant_count_#{date_hour.to_i}")
+      else
+        total_participant_count = @storage.total_participant_count(self, date_hour)
+        instance_variable_set("@total_participant_count_#{date_hour.to_i}", total_participant_count)
+        return total_participant_count
+      end
     end
 
     def conversion_rate(alt, category)
-      pcount = participant_count(alt)
-      ccount = conversion_count(alt, category)
-      (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
+      if instance_variable_get("@conversion_rate_#{alt.to_s}_#{category.to_s}").present?
+        return instance_variable_get("@conversion_rate_#{alt.to_s}_#{category.to_s}")
+      else
+        pcount = participant_count(alt)
+        ccount = conversion_count(alt, category)
+        conversion_rate = (pcount == 0 or ccount == 0) ? 0 : (ccount.to_f / pcount.to_f * 100.0)
+        instance_variable_set("@conversion_rate_#{alt.to_s}_#{category.to_s}", conversion_rate)
+        return conversion_rate
+      end
     end
 
     def conversion_per_participant(alt, category)
@@ -170,7 +227,13 @@ module Bandit
     end
 
     def alternative_start(alt)
-      @storage.alternative_start_time(self, alt)
+      if instance_variable_get("@alternative_start_#{alt.to_s}").present?
+        return instance_variable_get("@alternative_start_#{alt.to_s}")
+      else
+        alternative_start = @storage.alternative_start_time(self, alt)
+        instance_variable_set("@alternative_start_#{alt.to_s}", alternative_start)
+        return alternative_start
+      end
     end
 
     def best_alternative(category)
