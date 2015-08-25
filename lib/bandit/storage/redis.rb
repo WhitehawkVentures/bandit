@@ -24,6 +24,10 @@ module Bandit
       }
     end
 
+    def redis
+      @redis
+    end
+
     # initialize key if not set
     def init(key, value)
       with_failure_grace(value) {
