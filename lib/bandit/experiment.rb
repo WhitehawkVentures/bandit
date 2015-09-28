@@ -76,7 +76,7 @@ module Bandit
           experiments << Experiment.new(JSON.parse(val))
         end
       end
-      experiements
+      experiments
     end
 
     def choose(default=nil, category=nil, exclude=nil)
