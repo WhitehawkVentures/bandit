@@ -73,7 +73,7 @@ module Bandit
         experiment_keys = experiment_names.map { |n| Bandit.storage.experiment_key(n) }
         values = Bandit.storage.mget(experiment_keys)
         values.each do |val|
-          experiments << Experiment.new(val)
+          experiments << Experiment.new(JSON.parse(val))
         end
       end
       experiements
