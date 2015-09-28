@@ -66,7 +66,7 @@ module Bandit
   end
 
   def self.experiments
-    if Bandit.config.storage_config.fast_fetch
+    if Bandit.config.storage_config['fast_fetch']
       @@experiments ||= Experiment.instances_fast
     else
       @@experiments ||= Experiment.instances
