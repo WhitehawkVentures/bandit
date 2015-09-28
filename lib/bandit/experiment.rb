@@ -67,7 +67,6 @@ module Bandit
     end
     
     def self.instances_fast
-      raise "xx"
       experiment_names = Bandit.storage.get_experiments
       experiments = []
       if experiment_names.present?
