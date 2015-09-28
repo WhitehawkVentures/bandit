@@ -67,6 +67,8 @@ module Bandit
 
   def self.experiments
     if Bandit.config.storage_config['fast_fetch']
+      Rails.logger.info "using fast fetch to mget experiments"
+
       @@experiments ||= Experiment.instances_fast
     else
       @@experiments ||= Experiment.instances
