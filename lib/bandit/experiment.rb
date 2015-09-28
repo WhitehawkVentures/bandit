@@ -71,7 +71,7 @@ module Bandit
       experiments = []
       if experiment_names.present?
         experiment_keys = experiment_names.map { |n| Bandit.storage.experiment_key(n) }
-        values = Bandit.storage.mget(*experiment_keys)
+        values = Bandit.storage.mget(experiment_keys)
         values.each do |val|
           experiments << Experiment.new(val)
         end
