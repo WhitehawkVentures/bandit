@@ -43,6 +43,11 @@ module Bandit
         val.numeric? ? val.to_i : val
       }
     end
+    
+    def mget(keys)
+      return [] unless keys && keys.length > 0
+      @redis.mget(*keys)
+    end
 
     # set key with value, regardless of whether it is set or not
     def set(key, value)

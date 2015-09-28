@@ -64,6 +64,10 @@ module Bandit
     def get(key, default=0)
       raise NotImplementedError
     end
+    
+    def mget(keys, default=0)
+      raise NotImplementedError
+    end
 
     # set key with value, regardless of whether it is set or not
     def set(key, value)

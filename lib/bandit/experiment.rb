@@ -65,6 +65,19 @@ module Bandit
       end
       experiments
     end
+    
+    def self.instances_fast
+      experiment_names = Bandit.storage.get_experiments
+      experiments = []
+      if experiment_names.present?
+        experiment_keys = experiment_names.map { |n| Bandit.storage.experiment_key(n) }
+        values = mget(*experiments_keys)
+        values.each do |val|
+          experiments << Experiment.new(val)
+        end
+      end
+      experiements
+    end
 
     def choose(default=nil, category=nil, exclude=nil)
       if default && alternatives.include?(default)

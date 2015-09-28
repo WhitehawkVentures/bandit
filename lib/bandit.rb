@@ -66,7 +66,11 @@ module Bandit
   end
 
   def self.experiments
-    @@experiments ||= Experiment.instances
+    if Bandit.config.storage.fast_fetch
+      @@experiments ||= Experiment.instances_fast
+    else
+      @@experiments ||= Experiment.instances
+    end
   end
 end
 
