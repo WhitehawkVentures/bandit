@@ -99,9 +99,11 @@ module Bandit
     end
 
     def incr_conversions(experiment, alternative, category=nil, count=1, date_hour=nil)
+      date_hour ||= DateHour.now
+
       # increment total count and per hour count
       incr conv_key(experiment, alternative, category.to_s), count
-      incr conv_key(experiment, alternative, category.to_s, date_hour || DateHour.now), count
+      incr conv_key(experiment, alternative, category.to_s, date_hour), count
     end
 
     def total_participant_count(experiment, date_hour=nil)
@@ -166,7 +168,7 @@ module Bandit
     # otherwise, create key for hourly based
     def conv_key(exp, alt, category, date_hour=nil)
       parts = [ "conversions", exp.name, alt, category.to_s ]
-      parts += [ date_hour.date, date_hour.hour ] unless date_hour.nil?
+      parts += [ date_hour.date.strftime("%Y-%m-%d"), date_hour.hour ] unless date_hour.nil?
       make_key parts
     end
 
