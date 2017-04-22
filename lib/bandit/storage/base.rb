@@ -55,6 +55,11 @@ module Bandit
       raise NotImplementedError
     end
 
+    # increment hash field by count
+    def incr_hash(key, field, count)
+      raise NotImplementedError
+    end
+
     # initialize key if not set
     def init(key, value)
       raise NotImplementedError
@@ -62,6 +67,11 @@ module Bandit
 
     # get key if exists, otherwise 0
     def get(key, default=0)
+      raise NotImplementedError
+    end
+
+    # hget key if exists, otherwise 0
+    def hget(key, default=0)
       raise NotImplementedError
     end
     
@@ -95,7 +105,7 @@ module Bandit
 
       # increment total count and per hour count
       incr part_key(experiment, alternative), count
-      incr part_key(experiment, alternative, date_hour), count
+      incr_hash part_key(experiment, alternative), date_hour, count
     end
 
     def incr_conversions(experiment, alternative, category=nil, count=1, date_hour=nil)
@@ -103,7 +113,7 @@ module Bandit
 
       # increment total count and per hour count
       incr conv_key(experiment, alternative, category.to_s), count
-      incr conv_key(experiment, alternative, category.to_s, date_hour), count
+      incr_hash conv_key(experiment, alternative, category.to_s), date_hour, count
     end
 
     def total_participant_count(experiment, date_hour=nil)
@@ -115,13 +125,13 @@ module Bandit
     # if date_hour isn't specified, get total count
     # if date_hour is specified, return count for DateHour
     def participant_count(experiment, alternative, date_hour=nil)
-      get part_key(experiment, alternative, date_hour)
+      hget part_key(experiment, alternative), date_hour
     end
 
     # if date_hour isn't specified, get total count
     # if date_hour is specified, return count for DateHour
     def conversion_count(experiment, alternative, category, date_hour=nil)
-      get conv_key(experiment, alternative, category.to_s, date_hour)
+      hget conv_key(experiment, alternative, category.to_s), date_hour
     end
 
     def states_set(uuid, experiment, state)

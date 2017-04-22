@@ -29,6 +29,15 @@ module Bandit
       }
     end
 
+    # increment hash field by count
+    def incr_hash(key, field, count)
+      with_failure_grace(count) {
+        @redis.with do |conn|
+          conn.hincrby(key, field, count)
+        end
+      }
+    end
+
     def redis
       @redis
     end
@@ -47,6 +56,17 @@ module Bandit
       @redis.with do |conn|
         with_failure_grace(default) {
           val = conn.get(key)
+          return default if val.nil?
+          val.numeric? ? val.to_i : val
+        }
+      end
+    end
+
+    # hget key if exists, otherwise 0
+    def hget(key, field, default=0)
+      @redis.with do |conn|
+        with_failure_grace(default) {
+          val = conn.hget(key, field)
           return default if val.nil?
           val.numeric? ? val.to_i : val
         }
